@@ -110,6 +110,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Default initial capacity.
+     * 默认的初始化容量
      */
     private static final int DEFAULT_CAPACITY = 10;
 
@@ -130,6 +131,12 @@ public class ArrayList<E> extends AbstractList<E>
      * The capacity of the ArrayList is the length of this array buffer. Any
      * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     *
+     * 存储ArrayList元素的数组缓冲区，
+     * 这个数组缓冲区的长度就是ArrayList的容量。
+     * 任何（elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA）的空ArrayList
+     * 只有在增加第一个元素的时候，默认容量才会被分配。
+     *
      */
     transient Object[] elementData; // non-private to simplify nested class access
 
@@ -148,6 +155,21 @@ public class ArrayList<E> extends AbstractList<E>
      *         is negative
      */
     public ArrayList(int initialCapacity) {
+
+        /**
+         * comment: 2020-06-08 15:52:50
+         * 对于 initialCapacity 参数的处理
+         * 一般有两种处理方式：
+         * 方式一：
+         *    防御式编程 先验证不合法的参数，
+         *  if(initialCapacity < 0){
+         *      throw new IllegalArgumentException("Illegal Capacity: "+ initialCapacity);
+         *  }
+         * 方式二：
+         *    串行条件判断 一个一个条件判断直到相关条件判断在做处理
+         *
+         *
+         */
         if (initialCapacity > 0) {
             this.elementData = new Object[initialCapacity];
         } else if (initialCapacity == 0) {
@@ -177,6 +199,7 @@ public class ArrayList<E> extends AbstractList<E>
         elementData = c.toArray();
         if ((size = elementData.length) != 0) {
             // c.toArray might (incorrectly) not return Object[] (see 6260652)
+            // https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652
             if (elementData.getClass() != Object[].class)
                 elementData = Arrays.copyOf(elementData, size, Object[].class);
         } else {
@@ -252,9 +275,16 @@ public class ArrayList<E> extends AbstractList<E>
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = elementData.length;
+
+        // 默认扩容容量：原来容量 加上 原容量右移1位
         int newCapacity = oldCapacity + (oldCapacity >> 1);
+
+        // 如果默认扩容容量 小于 指定容量，
+        // 则将 指定容量 赋予 扩容容量
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
+
+        // 如果扩容容量 大于 最大数组长度
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
